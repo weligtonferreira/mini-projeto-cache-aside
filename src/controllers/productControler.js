@@ -27,7 +27,7 @@ module.exports = {
                 return res.status(200).send({ message: "Produto encontrado com sucesso!", product: value });
             } else {
                 await query(
-                    'SELECT FROM product WHERE code = $1',
+                    'SELECT * FROM product WHERE id = $1',
                     [id]
                 ).then(async (response) => {
                     if (response.rows[0]) {
@@ -46,11 +46,11 @@ module.exports = {
     // ==> Método responsável por criar um novo produto:
 
     async createProduct(req, res) {
-        const { product_name, quantity, price } = req.body;
+        const { id, product_name, quantity, price } = req.body;
         
         await query(
-            'INSERT INTO product (product_name, quantity, price) VALUES ($1, $2, $3)',
-            [product_name, quantity, price]
+            'INSERT INTO product (id, product_name, quantity, price) VALUES ($1, $2, $3, $4)',
+            [id, product_name, quantity, price]
         ).then(async () => {
             return res.status(201).send({ message: "Produto criado com sucesso!", product: { product_name, quantity, price } });
         }, (error) => {
@@ -66,7 +66,7 @@ module.exports = {
 
         await query(
             'UPDATE product SET product_name = $1, quantity = $2, price = $3 WHERE id = $4',
-            [product_name, quantity, price]
+            [product_name, quantity, price, id]
         ).then(async (response) => {
             client.get(id, async (err, reply) => {
                 if (reply != null) {
